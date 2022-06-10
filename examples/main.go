@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/babulalt/go-khalti/v1/khalti"
+	"github.com/babulalt/go-khalti/khalti"
 )
 
 func main() {

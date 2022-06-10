@@ -1,4 +1,4 @@
-module github.com/babulalt/go-khalti/v1
+module github.com/babulalt/go-khalti
 
 go 1.16
 
