@@ -39,6 +39,8 @@ type ConformTransactionResponse struct {
 
 // VerifyTransactionRequest represents a Khalti Verify Payment Request
 type VerifyTransactionRequest struct {
+	Token  string `json:"token"`
+	Amount uint64 `json:"amount"`
 }
 
 // VerifyTransactionResponse represents a Khalti Verify Payment Response

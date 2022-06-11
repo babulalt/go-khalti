@@ -2,7 +2,9 @@ package khalti
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -10,59 +12,82 @@ import (
 
 // Initiate tansaction khalti
 // Endpoint: POST /api/v2/payment/initiate/
-func (s *KhaltiService) InitiateTransaction(payload *InitiateTransactionRequest) (*InitiateTransactionResponse, *http.Response, error) {
+func (s *KhaltiService) InitiateTransaction(payload *InitiateTransactionRequest) (*InitiateTransactionResponse, error) {
 	url := s.BaseUrl + "api/v2/payment/initiate/"
 	req, err := http.NewRequest(http.MethodPost, url, Payload(payload))
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	req.Header.Add("Content-Type", "application/json")
 	res, err := s.Client.Do(req)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	data := &InitiateTransactionResponse{}
 	err = json.Unmarshal(body, data)
-	return data, nil, err
+	if err != nil {
+		return nil, err
+	}
+	return data, err
+}
+
+//Confirm tansaction khalti
+//Endpoint: POST /api/v2/payment/confirm/
+func (s *KhaltiService) ConfirmationTransaction(ctx context.Context, payload *ConfirmTransactionRequest) (*ConformTransactionResponse, error) {
+	url := s.BaseUrl + "api/v2/payment/confirm/"
+	req, err := http.NewRequest(http.MethodPost, url, Payload(payload))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", "application/json")
+	res, err := s.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	confirmTransactionResponse := &ConformTransactionResponse{}
+	err = json.Unmarshal(body, confirmTransactionResponse)
+	if err != nil {
+		return nil, err
+	}
+	return confirmTransactionResponse, nil
 }
 
 // Initiate tansaction khalti
-// Endpoint: POST /api/v2/payment/confirm/
-// func (s *KhaltiService) ConfirmationTransaction(ctx context.Context, payload *ConfirmTransactionRequest) (*ConformTransactionResponse, *http.Response, error) {
-// 	req, err := s.Client.NewRequest(http.MethodPost, "api/v2/payment/confirm/", payload)
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
-// 	req.Header.Add("Content-Type", "application/json")
-// 	data := &ConformTransactionResponse{}
-// 	resp, err := s.client.Do(req, data)
-// 	if err != nil {
-// 		return nil, resp, err
-// 	}
-// 	return data, resp, nil
-// }
-
-// // Initiate tansaction khalti
-// // Endpoint: POST /api/v2/payment/verify/
-// func (s *KhaltiService) VerifyTransaction(ctx context.Context, payload *VerifyTransactionRequest) (*VerifyTransactionResponse, *http.Response, error) {
-// 	req, err := s.client.NewRequest(http.MethodPost, "api/v2/payment/verify/", payload)
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
-// 	req.Header.Add("Content-Type", "application/json")
-// 	req.Header.Add("Authorization", fmt.Sprintf("key %s", s.client.Secret))
-// 	data := &VerifyTransactionResponse{}
-// 	resp, err := s.client.Do(req, data)
-// 	if err != nil {
-// 		return nil, resp, err
-// 	}
-// 	return data, resp, nil
-// }
+// Endpoint: POST /api/v2/payment/verify/
+func (s *KhaltiService) VerifyTransaction(ctx context.Context, payload *VerifyTransactionRequest) (*VerifyTransactionResponse, error) {
+	url := s.BaseUrl + "api/v2/payment/verify/"
+	req, err := http.NewRequest(http.MethodPost, url, Payload(payload))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", fmt.Sprintf("key %s", s.SecretKey))
+	res, err := s.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	verifyTransactionResponse := &VerifyTransactionResponse{}
+	err = json.Unmarshal(body, verifyTransactionResponse)
+	if err != nil {
+		return nil, err
+	}
+	return verifyTransactionResponse, nil
+}
 
 func Payload(payload interface{}) io.Reader {
 	if payload != nil {

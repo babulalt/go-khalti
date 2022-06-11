@@ -23,7 +23,7 @@ func main() {
 		ProductName:     "test",
 		ProductUrl:      "product_url",
 	}
-	data, _, err := khaltiService.InitiateTransaction(trasaction)
+	data, err := khaltiService.InitiateTransaction(trasaction)
 	if err != nil {
 		fmt.Println("initiate payment error ::", err)
 		return
